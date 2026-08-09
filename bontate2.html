@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>BONTATE KOPANANG - Admin</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f2f4f7;
+    color: #222;
+}
+
+/* LOGIN */
+
+#loginScreen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.login-box {
+    width: 100%;
+    max-width: 400px;
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    text-align: center;
+}
+
+.login-box h1 {
+    margin: 0;
+}
+
+.login-box p {
+    color: #666;
+}
+
+.password {
+    width: 100%;
+    padding: 14px;
+    margin-top: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 18px;
+    text-align: center;
+}
+
+.login-button {
+    width: 100%;
+    margin-top: 15px;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    background: #25D366;
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.error {
+    color: #dc3545;
+    margin-top: 12px;
+    display: none;
+}
+
+
+/* ADMIN */
+
+#adminScreen {
+    display: none;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 15px;
+}
+
+.header {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.header h1 {
+    margin: 0;
+}
+
+.header p {
+    color: #666;
+}
+
+.controls {
+    background: white;
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: 12px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.search {
+    flex: 1;
+    min-width: 200px;
+    padding: 13px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+button {
+    border: none;
+    border-radius: 8px;
+    padding: 13px 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.refresh {
+    background: #333;
+    color: white;
+}
+
+.clear {
+    background: #dc3545;
+    color: white;
+}
+
+.back {
+    background: #25D366;
+    color: white;
+}
+
+.logout {
+    background: #777;
+    color: white;
+}
+
+.stats {
+    background: white;
+    margin-top: 15px;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.stats-number {
+    font-size: 35px;
+    font-weight: bold;
+    color: #25D366;
+}
+
+.records {
+    margin-top: 15px;
+}
+
+.record {
+    background: white;
+    margin-bottom: 15px;
+    padding: 18px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.record-content {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.photo {
+    width: 120px;
+    height: 120px;
+    border-radius: 10px;
+    object-fit: cover;
+    background: #eee;
+    border: 1px solid #ddd;
+}
+
+.details {
+    flex: 1;
+    min-width: 230px;
+}
+
+.details h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+
+.details p {
+    margin: 7px 0;
+}
+
+.delete {
+    background: #dc3545;
+    color: white;
+    margin-top: 15px;
+}
+
+.empty {
+    background: white;
+    padding: 40px 20px;
+    text-align: center;
+    border-radius: 12px;
+    color: #777;
+}
+
+.footer {
+    text-align: center;
+    color: #777;
+    margin-top: 20px;
+    font-size: 13px;
+}
+
+</style>
+</head>
+
+<body>
+
+
+<!-- ================= LOGIN SCREEN ================= -->
+
+<div id="loginScreen">
+
+    <div class="login-box">
+
+        <h1>🔐</h1>
+
+        <h2>BONTATE KOPANANG</h2>
+
+        <p>Admin Attendance System</p>
+
+        <input
+            type="password"
+            id="password"
+            class="password"
+            placeholder="Enter admin password"
+            inputmode="numeric"
+            maxlength="4"
+        >
+
+        <button
+            class="login-button"
+            onclick="login()">
+            🔓 LOGIN
+        </button>
+
+        <div
+            id="error"
+            class="error">
+            Incorrect password
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ================= ADMIN SCREEN ================= -->
+
+<div id="adminScreen">
+
+<div class="container">
+
+    <div class="header">
+
+        <h1>BONTATE KOPANANG</h1>
+
+        <p>MEETING ATTENDANCE ADMIN</p>
+
+    </div>
+
+
+    <div class="controls">
+
+        <input
+            type="text"
+            id="search"
+            class="search"
+            placeholder="Search name, surname or phone..."
+        >
+
+        <button
+            class="refresh"
+            onclick="loadRecords()">
+            🔄 Refresh
+        </button>
+
+        <button
+            class="back"
+            onclick="window.location.href='admit2.html'">
+            ➕ Add Attendance
+        </button>
+
+        <button
+            class="clear"
+            onclick="clearAll()">
+            🗑️ Clear All
+        </button>
+
+        <button
+            class="logout"
+            onclick="logout()">
+            🔒 Logout
+        </button>
+
+    </div>
+
+
+    <div class="stats">
+
+        <div>Total Attendance</div>
+
+        <div
+            class="stats-number"
+            id="total">
+            0
+        </div>
+
+    </div>
+
+
+    <div
+        class="records"
+        id="records">
+    </div>
+
+
+    <div class="footer">
+
+        BONTATE KOPANANG MEETING
+
+    </div>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* ================= PASSWORD ================= */
+
+const ADMIN_PASSWORD = "1234";
+
+
+function login() {
+
+    const password =
+        document.getElementById("password").value;
+
+    const error =
+        document.getElementById("error");
+
+
+    if (password === ADMIN_PASSWORD) {
+
+        sessionStorage.setItem(
+            "bontateAdminLoggedIn",
+            "true"
+        );
+
+        document.getElementById("loginScreen")
+            .style.display = "none";
+
+        document.getElementById("adminScreen")
+            .style.display = "block";
+
+        loadRecords();
+
+    } else {
+
+        error.style.display = "block";
+
+        document.getElementById("password").value = "";
+
+    }
+
+}
+
+
+/* ALLOW ENTER KEY */
+
+document
+    .getElementById("password")
+    .addEventListener("keydown", function(event) {
+
+        if (event.key === "Enter") {
+            login();
+        }
+
+    });
+
+
+/* CHECK LOGIN */
+
+function checkLogin() {
+
+    const loggedIn =
+        sessionStorage.getItem(
+            "bontateAdminLoggedIn"
+        );
+
+    if (loggedIn === "true") {
+
+        document.getElementById("loginScreen")
+            .style.display = "none";
+
+        document.getElementById("adminScreen")
+            .style.display = "block";
+
+        loadRecords();
+
+    }
+
+}
+
+
+/* LOGOUT */
+
+function logout() {
+
+    sessionStorage.removeItem(
+        "bontateAdminLoggedIn"
+    );
+
+    location.reload();
+
+}
+
+
+/* ================= ATTENDANCE ================= */
+
+function getRecords() {
+
+    return JSON.parse(
+        localStorage.getItem("bontateAttendance")
+    ) || [];
+
+}
+
+
+function loadRecords() {
+
+    const records = getRecords();
+
+    const search =
+        document.getElementById("search")
+        .value
+        .toLowerCase()
+        .trim();
+
+    const container =
+        document.getElementById("records");
+
+    document.getElementById("total")
+        .textContent = records.length;
+
+
+    let filtered = records.filter(function(record) {
+
+        return (
+
+            record.name.toLowerCase().includes(search) ||
+
+            record.surname.toLowerCase().includes(search) ||
+
+            record.phone.toLowerCase().includes(search)
+
+        );
+
+    });
+
+
+    if (filtered.length === 0) {
+
+        container.innerHTML = `
+            <div class="empty">
+                <h3>No attendance records found</h3>
+                <p>Records saved from admit2.html will appear here.</p>
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    filtered.reverse();
+
+    container.innerHTML = "";
+
+
+    filtered.forEach(function(record) {
+
+        const div =
+            document.createElement("div");
+
+        div.className = "record";
+
+
+        const photoHTML = record.photo
+
+            ? `<img
+                class="photo"
+                src="${record.photo}"
+                alt="Attendance Photo"
+              >`
+
+            : `<div
+                class="photo"
+                style="
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                color:#777;">
+                No Photo
+              </div>`;
+
+
+        div.innerHTML = `
+
+            <div class="record-content">
+
+                ${photoHTML}
+
+                <div class="details">
+
+                    <h3>
+                        ${escapeHTML(record.name)}
+                        ${escapeHTML(record.surname)}
+                    </h3>
+
+                    <p>
+                        📞 <strong>Phone:</strong>
+                        ${escapeHTML(record.phone)}
+                    </p>
+
+                    <p>
+                        🏠 <strong>Address:</strong>
+                        ${escapeHTML(record.address || "Not provided")}
+                    </p>
+
+                    <p>
+                        📝 <strong>Notes:</strong>
+                        ${escapeHTML(record.notes || "None")}
+                    </p>
+
+                    <p>
+                        📅 <strong>Date:</strong>
+                        ${record.date}
+                    </p>
+
+                    <p>
+                        🕐 <strong>Time:</strong>
+                        ${record.time}
+                    </p>
+
+                    <button
+                        class="delete"
+                        onclick="deleteRecord(${record.id})">
+                        🗑️ Delete Record
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+
+
+        container.appendChild(div);
+
+    });
+
+}
+
+
+/* DELETE RECORD */
+
+function deleteRecord(id) {
+
+    if (!confirm(
+        "Are you sure you want to delete this attendance record?"
+    )) {
+        return;
+    }
+
+
+    let records = getRecords();
+
+
+    records = records.filter(function(record) {
+
+        return record.id !== id;
+
+    });
+
+
+    localStorage.setItem(
+        "bontateAttendance",
+        JSON.stringify(records)
+    );
+
+
+    loadRecords();
+
+}
+
+
+/* CLEAR ALL */
+
+function clearAll() {
+
+    const records = getRecords();
+
+    if (records.length === 0) {
+
+        alert("There are no attendance records.");
+
+        return;
+
+    }
+
+
+    if (!confirm(
+        "WARNING!\n\nThis will delete ALL attendance records.\n\nContinue?"
+    )) {
+        return;
+    }
+
+
+    localStorage.removeItem(
+        "bontateAttendance"
+    );
+
+
+    loadRecords();
+
+    alert("All attendance records deleted.");
+
+}
+
+
+/* SEARCH */
+
+document
+    .getElementById("search")
+    .addEventListener("input", loadRecords);
+
+
+/* SECURITY */
+
+function escapeHTML(value) {
+
+    if (!value) return "";
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* START */
+
+checkLogin();
+
+</script>
+
+</body>
+</html>
