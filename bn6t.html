@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>BONTATE KOPANANG - Emergency</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background: #080808;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.app {
+    width: 100%;
+    max-width: 520px;
+    min-height: 100vh;
+    padding: 25px 20px;
+    text-align: center;
+}
+
+.logo {
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+
+.subtitle {
+    color: #aaa;
+    margin: 6px 0 25px;
+}
+
+.profile {
+    background: #191919;
+    border-radius: 15px;
+    padding: 18px;
+    text-align: left;
+    margin-bottom: 25px;
+}
+
+.profile h2 {
+    margin-top: 0;
+}
+
+label {
+    display: block;
+    margin: 13px 0 6px;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 13px;
+    border: 0;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+/* PANIC BUTTON */
+
+.panic {
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    border: 14px solid #680000;
+    background: #df0000;
+    color: white;
+    font-size: 40px;
+    font-weight: 900;
+    cursor: pointer;
+
+    box-shadow:
+        0 0 0 10px rgba(255,0,0,.15),
+        0 0 45px rgba(255,0,0,.55);
+
+    transition: transform .15s, background .15s;
+}
+
+.panic:hover {
+    background: #ff0000;
+}
+
+.panic:active {
+    transform: scale(.93);
+}
+
+/* STATUS */
+
+.status {
+    min-height: 55px;
+    margin-top: 22px;
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+/* CANCEL */
+
+.cancel {
+    display: none;
+    width: 100%;
+    max-width: 300px;
+    padding: 15px;
+    margin: 10px auto;
+    background: #333;
+    color: white;
+    border: 2px solid white;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* ACTIONS */
+
+.actions {
+    display: none;
+    gap: 10px;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.actions a {
+    text-decoration: none;
+    color: white;
+    padding: 14px;
+    border-radius: 9px;
+    font-weight: bold;
+}
+
+.whatsapp {
+    background: #25D366;
+}
+
+.call {
+    background: #1677ff;
+}
+
+.map {
+    background: #444;
+}
+
+.location {
+    margin-top: 20px;
+    padding: 15px;
+    background: #191919;
+    border-radius: 10px;
+    font-size: 14px;
+    word-break: break-word;
+}
+
+.footer {
+    margin-top: 25px;
+    color: #777;
+    font-size: 12px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <div class="logo">
+        BONTATE KOPANANG
+    </div>
+
+    <div class="subtitle">
+        EMERGENCY PANIC ALERT
+    </div>
+
+
+    <!-- USER INFORMATION -->
+
+    <div class="profile">
+
+        <h2>Emergency Profile</h2>
+
+        <label for="name">
+            Your Name
+        </label>
+
+        <input
+            id="name"
+            type="text"
+            placeholder="Enter your name"
+        >
+
+        <label for="phone">
+            Your Phone Number
+        </label>
+
+        <input
+            id="phone"
+            type="tel"
+            placeholder="Enter your phone number"
+        >
+
+    </div>
+
+
+    <!-- PANIC -->
+
+    <button
+        class="panic"
+        id="panicButton"
+        onclick="startPanic()"
+    >
+        PANIC
+    </button>
+
+
+    <div
+        class="status"
+        id="status"
+    >
+        Press only in an emergency.
+    </div>
+
+
+    <!-- CANCEL -->
+
+    <button
+        class="cancel"
+        id="cancelButton"
+        onclick="cancelPanic()"
+    >
+        CANCEL ALERT
+    </button>
+
+
+    <!-- LOCATION -->
+
+    <div
+        class="location"
+        id="location"
+    >
+        📍 Location not requested.
+    </div>
+
+
+    <!-- ACTION BUTTONS -->
+
+    <div
+        class="actions"
+        id="actions"
+    >
+
+        <a
+            id="whatsappButton"
+            class="whatsapp"
+            target="_blank"
+        >
+            💬 OPEN WHATSAPP ALERT
+        </a>
+
+        <a
+            id="callButton"
+            class="call"
+        >
+            📞 CALL EMERGENCY CONTACT
+        </a>
+
+        <a
+            id="mapButton"
+            class="map"
+            target="_blank"
+        >
+            🗺️ OPEN MY LOCATION
+        </a>
+
+    </div>
+
+
+    <div class="footer">
+
+        BONTATE KOPANANG Emergency Alert System
+
+    </div>
+
+</div>
+
+
+<script>
+
+/*
+====================================================
+PRELOADED EMERGENCY CONTACTS
+====================================================
+
+The duplicate number has been removed.
+
+These are hidden from the user interface.
+====================================================
+*/
+
+const emergencyContacts = [
+
+    "27719350823",
+    "27638765047",
+    "27683707042",
+    "27787102337"
+
+];
+
+
+/*
+====================================================
+VARIABLES
+====================================================
+*/
+
+let countdownTimer = null;
+
+let countdown = 5;
+
+let cancelled = false;
+
+let emergencyLocation = null;
+
+
+/*
+====================================================
+START PANIC
+====================================================
+*/
+
+function startPanic() {
+
+    const name =
+        document.getElementById("name")
+        .value
+        .trim();
+
+    const phone =
+        document.getElementById("phone")
+        .value
+        .trim();
+
+
+    if (!name) {
+
+        alert("Please enter your name.");
+
+        return;
+
+    }
+
+
+    if (!phone) {
+
+        alert("Please enter your phone number.");
+
+        return;
+
+    }
+
+
+    cancelled = false;
+
+    countdown = 5;
+
+
+    document.getElementById(
+        "cancelButton"
+    ).style.display = "block";
+
+
+    updateCountdown();
+
+
+    countdownTimer = setInterval(() => {
+
+        countdown--;
+
+        updateCountdown();
+
+
+        if (countdown <= 0) {
+
+            clearInterval(countdownTimer);
+
+            if (!cancelled) {
+
+                activatePanic();
+
+            }
+
+        }
+
+    }, 1000);
+
+}
+
+
+/*
+====================================================
+COUNTDOWN
+====================================================
+*/
+
+function updateCountdown() {
+
+    document.getElementById("status").innerHTML =
+
+        "⚠️ PANIC ALERT STARTING IN " +
+
+        "<strong>" +
+
+        countdown +
+
+        "</strong> SECONDS";
+
+}
+
+
+/*
+====================================================
+CANCEL
+====================================================
+*/
+
+function cancelPanic() {
+
+    cancelled = true;
+
+    clearInterval(countdownTimer);
+
+
+    document.getElementById(
+        "cancelButton"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "status"
+    ).innerHTML =
+
+        "✅ ALERT CANCELLED";
+
+}
+
+
+/*
+====================================================
+ACTIVATE
+====================================================
+*/
+
+function activatePanic() {
+
+    document.getElementById(
+        "cancelButton"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "status"
+    ).innerHTML =
+
+        "🚨 PANIC ALERT ACTIVATED";
+
+
+    startAlarm();
+
+    getLocation();
+
+}
+
+
+/*
+====================================================
+GET GPS
+====================================================
+*/
+
+function getLocation() {
+
+    const box =
+        document.getElementById("location");
+
+
+    box.innerHTML =
+        "📍 Getting your GPS location...";
+
+
+    if (!navigator.geolocation) {
+
+        box.innerHTML =
+            "❌ GPS is not supported.";
+
+        finishWithoutLocation();
+
+        return;
+
+    }
+
+
+    navigator.geolocation.getCurrentPosition(
+
+        function(position) {
+
+            const lat =
+                position.coords.latitude;
+
+            const lng =
+                position.coords.longitude;
+
+
+            emergencyLocation =
+                `https://www.google.com/maps?q=${lat},${lng}`;
+
+
+            box.innerHTML =
+
+                "📍 LOCATION FOUND<br><br>" +
+
+                lat +
+                ", " +
+                lng;
+
+
+            finishAlert();
+
+        },
+
+        function() {
+
+            box.innerHTML =
+                "❌ GPS location unavailable.";
+
+            finishWithoutLocation();
+
+        },
+
+        {
+
+            enableHighAccuracy: true,
+
+            timeout: 15000,
+
+            maximumAge: 0
+
+        }
+
+    );
+
+}
+
+
+/*
+====================================================
+CREATE MESSAGE
+====================================================
+*/
+
+function createMessage() {
+
+    const name =
+        document.getElementById("name")
+        .value
+        .trim();
+
+
+    const phone =
+        document.getElementById("phone")
+        .value
+        .trim();
+
+
+    let message =
+
+`🚨 BONTATE KOPANANG PANIC ALERT 🚨
+
+EMERGENCY ASSISTANCE REQUIRED
+
+Name: ${name}
+
+Phone: ${phone}
+
+This person has activated the BONTATE KOPANANG emergency alert.`;
+
+
+    if (emergencyLocation) {
+
+        message +=
+
+`
+
+📍 LOCATION:
+
+${emergencyLocation}`;
+
+    }
+
+
+    message +=
+
+`
+
+Please contact this person immediately and provide assistance.`;
+
+
+    return message;
+
+}
+
+
+/*
+====================================================
+FINISH ALERT
+====================================================
+*/
+
+function finishAlert() {
+
+    const message =
+        createMessage();
+
+
+    setupActions(message);
+
+}
+
+
+/*
+====================================================
+NO LOCATION
+====================================================
+*/
+
+function finishWithoutLocation() {
+
+    emergencyLocation = null;
+
+    const message =
+        createMessage();
+
+
+    setupActions(message);
+
+}
+
+
+/*
+====================================================
+SETUP ACTIONS
+====================================================
+*/
+
+function setupActions(message) {
+
+    const encoded =
+        encodeURIComponent(message);
+
+
+    /*
+       WhatsApp opens the first emergency
+       contact with the prepared message.
+    */
+
+    const firstContact =
+        emergencyContacts[0];
+
+
+    document.getElementById(
+        "whatsappButton"
+    ).href =
+
+        `https://wa.me/${firstContact}?text=${encoded}`;
+
+
+    /*
+       Call the first emergency contact.
+    */
+
+    document.getElementById(
+        "callButton"
+    ).href =
+
+        `tel:+${firstContact}`;
+
+
+    /*
+       Map button.
+    */
+
+    if (emergencyLocation) {
+
+        document.getElementById(
+            "mapButton"
+        ).href = emergencyLocation;
+
+    }
+
+
+    document.getElementById(
+        "actions"
+    ).style.display = "flex";
+
+
+    document.getElementById(
+        "status"
+    ).innerHTML =
+
+        "🚨 PANIC ALERT READY<br>" +
+
+        "Use the buttons below to contact Bestway.";
+
+}
+
+
+/*
+====================================================
+ALARM
+====================================================
+*/
+
+function startAlarm() {
+
+    try {
+
+        const AudioContext =
+            window.AudioContext ||
+            window.webkitAudioContext;
+
+
+        const audio =
+            new AudioContext();
+
+
+        const oscillator =
+            audio.createOscillator();
+
+
+        const gain =
+            audio.createGain();
+
+
+        oscillator.connect(gain);
+
+        gain.connect(audio.destination);
+
+
+        oscillator.frequency.value = 850;
+
+        gain.gain.value = 0.3;
+
+
+        oscillator.start();
+
+
+        let count = 0;
+
+
+        const alarm =
+            setInterval(() => {
+
+                oscillator.frequency.value =
+                    count % 2 === 0
+                    ? 850
+                    : 500;
+
+
+                count++;
+
+
+                if (count >= 20) {
+
+                    clearInterval(alarm);
+
+                    oscillator.stop();
+
+                }
+
+            }, 250);
+
+    }
+
+    catch (error) {
+
+        console.log(
+            "Alarm unavailable:",
+            error
+        );
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
